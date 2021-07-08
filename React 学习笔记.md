@@ -148,3 +148,35 @@ class MyComponent extends React.Component{
 }
 ```
 
+### React props
+
+props 相当于组件或者函数的入参，组件渲染需要的差异化参数由它渲染
+
+函数式组件应用案例：
+
+``` jsx
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+```
+
+类式组件应用案例：
+
+```jsx
+class Welcome extends React.Component {
+  render() {
+    return <h1>Hello, {this.props.name}</h1>;
+  }
+}
+```
+
+渲染：
+
+```jsx
+const element = <Welcome name="Sara" />;
+ReactDOM.render(
+  element,
+  document.getElementById('root')
+);
+```
+
