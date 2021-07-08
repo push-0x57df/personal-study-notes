@@ -39,3 +39,30 @@ React 定义的一种 JS 的扩展语法
   - 小写时必须保证html有这个标签，没有则会报错
   - 大写时必须定义为组件才可以使用
 
+## React 组件
+
+- 函数式组件
+
+  定义一个函数，形如：
+
+  ```bable
+  function MyComponent(){
+      return <p>我是一个函数式组件</p>
+  }
+  ```
+
+  需要注意的是，函数式组件的函数名首字母应当大写
+
+- 类式组件
+
+  定义一个类，需要继承React.Component，形如：
+
+  ``` bable
+  class MyComponent extends React.Component{
+  	render(){
+  		return <p>我是一个类式组件</p>
+  	}
+  }
+  ```
+
+  需要注意的是类式组件必须继承React.Component，类名的首字母需要大写
