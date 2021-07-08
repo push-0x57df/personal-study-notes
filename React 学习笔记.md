@@ -105,3 +105,29 @@ class MyComponent extends React.Component{
 }
 ```
 
+## React 类式组件 this 指向问题
+
+当在类式组件里面需要写一些方法完配合组件事件来更新state时，会出现this指向问题，因为只有当实例本身调用方法才能在方法里的this拿到实例本身，类式组件的方法默认开启了严格模式，所以需要在类的构造器里预修改具体方法的this指向，例如：
+
+``` jsx
+class MyComponent extends React.Component{
+	constructor(props){
+		super(props)
+		this.state = {
+			isStudy: true
+		}
+        this.changeStudy = this.changeStudy.bind(this)//关键代码
+	}
+	render(){
+		const {isStudy} = this.state
+		return <p onClick={this.changeStudy}>今天{isStudy?'学习了':'没学习'}</p>
+	}
+    
+    changeStudy(){
+        const isStudy = this.state.isStudy
+        this.setState({isStudy:!isStudy})//这里需要调用内置方法setState
+    }
+}
+```
+
+## 
