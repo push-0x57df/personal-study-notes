@@ -239,3 +239,23 @@ react官方建议我们不要过度使用refs，因此我们应当尽量使用�
 
   指的是通过函数继续返回函数的形式多次接收高阶函数每次传入的参数，最后统一处理的的技术
 
+### 组件的生命周期函数
+
+ - 构造器
+
+   constructor()
+
+- 组件挂载
+
+  render()
+
+- 初始化完毕
+
+  componentDidMount()
+
+- 即将卸载组件
+
+  componentWillUnmount()
+
+![image-20210708234019664](React 学习笔记.assets/image-20210708234019664.png)
+
