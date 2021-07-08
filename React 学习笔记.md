@@ -125,7 +125,7 @@ class MyComponent extends React.Component{
     
     changeStudy(){
         const isStudy = this.state.isStudy
-        this.setState({isStudy:!isStudy})//这里需要调用内置方法setState
+        this.setState({isStudy:!isStudy})//这里需要调用内置方法setState更新状态，这样才会自动调用render重新渲染视图
     }
 }
 ```
