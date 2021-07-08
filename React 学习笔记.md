@@ -180,7 +180,7 @@ ReactDOM.render(
 );
 ```
 
-React refs
+### React refs
 
 refs提供了一种访问Dom的方式，它能给组件被调用后的真实Dom做标记，这样就可以直接进行Dom操作
 
@@ -217,4 +217,8 @@ class Welcome extends React.Component {
   	}
 }
 ```
+
+注意：如果使用回调内联的方法定义的，在更新的时候会被执行两次，第一次取得的是空对象，但是它其实无关紧要，如需避免则需要定义成类绑定的方式
+
+
 
