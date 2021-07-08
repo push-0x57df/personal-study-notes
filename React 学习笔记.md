@@ -156,7 +156,7 @@ props 相当于组件或者函数的入参，组件渲染需要的差异化参�
 
 ``` jsx
 function Welcome(props) {
-  return <h1>Hello, {props.name}</h1>;
+  	return <h1>Hello, {props.name}</h1>;
 }
 ```
 
@@ -164,9 +164,9 @@ function Welcome(props) {
 
 ```jsx
 class Welcome extends React.Component {
-  render() {
-    return <h1>Hello, {this.props.name}</h1>;
-  }
+  	render() {
+    	return <h1>Hello, {this.props.name}</h1>;
+  	}
 }
 ```
 
@@ -175,8 +175,46 @@ class Welcome extends React.Component {
 ```jsx
 const element = <Welcome name="Sara" />;
 ReactDOM.render(
-  element,
-  document.getElementById('root')
+  	element,
+  	document.getElementById('root')
 );
+```
+
+React refs
+
+refs提供了一种访问Dom的方式，它能给组件被调用后的真实Dom做标记，这样就可以直接进行Dom操作
+
+```jsx
+class Welcome extends React.Component {
+    showData = ()=>{
+        const {input1} = this.refs
+        alert(input1.value)
+    }
+    
+  	render() {
+    	return (
+            <input ref="input1" />
+            <button onClick={this.showData}>点击显示输入框内容</button>
+        )
+  	}
+}
+```
+
+不推荐这样使用refs，因为其存在效率问题，应当使用回调形式的refs，其本质是使用ref取出dom然后挂载到组件实例自身上，形如：
+
+```jsx
+class Welcome extends React.Component {
+    showData = ()=>{
+        const {input1} = this
+        alert(input1.value)
+    }
+    
+  	render() {
+    	return (
+            <input ref={(currentNode)=>{this.input1 = currentNode}} />
+            <button onClick={this.showData}>点击显示输入框内容</button>
+        )
+  	}
+}
 ```
 
