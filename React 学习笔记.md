@@ -45,7 +45,7 @@ React 定义的一种 JS 的扩展语法
 
   定义一个函数，形如：
 
-  ```bable
+  ```jsx
   function MyComponent(){
       return <p>我是一个函数式组件</p>
   }
@@ -57,7 +57,7 @@ React 定义的一种 JS 的扩展语法
 
   定义一个类，需要继承React.Component，形如：
 
-  ``` bable
+  ``` jsx
   class MyComponent extends React.Component{
   	render(){
   		return <p>我是一个类式组件</p>
@@ -71,7 +71,7 @@ React 定义的一种 JS 的扩展语法
 
 即类式组件的状态，状态驱动视图
 
-``` bable
+``` jsx
 class MyComponent extends React.Component{
 	constructor(props){
 		super(props)
