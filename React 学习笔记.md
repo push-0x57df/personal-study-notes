@@ -130,4 +130,21 @@ class MyComponent extends React.Component{
 }
 ```
 
-## 
+### 类式组件简写
+
+``` jsx
+class MyComponent extends React.Component{
+    state = {isStudy: true}
+
+    render(){
+		const {isStudy} = this.state
+		return <p onClick={this.changeStudy}>今天{isStudy?'学习了':'没学习'}</p>
+	}
+    
+    changeStudy = ()->{
+        const isStudy = this.state.isStudy
+        this.setState({isStudy:!isStudy})//这里需要调用内置方法setState更新状态，这样才会自动调用render重新渲染视图
+    }
+}
+```
+
