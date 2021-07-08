@@ -80,8 +80,27 @@ class MyComponent extends React.Component{
 		}
 	}
 	render(){
-		const {isStudy} = this.state.
+		const {isStudy} = this.state
 		return <p>今天{isStudy?'学习了':'没学习'}</p>
+	}
+}
+```
+
+## React 组件监听事件
+
+以点击事件onclick为例，在jsx中需要写onClick，赋值要写{函数名}的形式，例如：
+
+``` jsx
+class MyComponent extends React.Component{
+	constructor(props){
+		super(props)
+		this.state = {
+			isStudy: true
+		}
+	}
+	render(){
+		const {isStudy} = this.state
+		return <p onClick={dome}>今天{isStudy?'学习了':'没学习'}</p>
 	}
 }
 ```
