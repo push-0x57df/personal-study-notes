@@ -66,3 +66,23 @@ React 定义的一种 JS 的扩展语法
   ```
 
   需要注意的是类式组件必须继承React.Component，类名的首字母需要大写
+
+## React state
+
+即类式组件的状态，状态驱动视图
+
+``` bable
+class MyComponent extends React.Component{
+	constructor(props){
+		super(props)
+		this.state = {
+			isStudy: true
+		}
+	}
+	render(){
+		const {isStudy} = this.state.
+		return <p>今天{isStudy?'学习了':'没学习'}</p>
+	}
+}
+```
+
