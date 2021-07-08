@@ -67,7 +67,7 @@ React 定义的一种 JS 的扩展语法
 
   需要注意的是类式组件必须继承React.Component，类名的首字母需要大写
 
-## React state
+### React state
 
 即类式组件的状态，状态驱动视图
 
@@ -86,7 +86,7 @@ class MyComponent extends React.Component{
 }
 ```
 
-## React 组件监听事件
+### React 组件监听事件
 
 以点击事件onclick为例，在jsx中需要写onClick，赋值要写{函数名}的形式，例如：
 
@@ -105,7 +105,7 @@ class MyComponent extends React.Component{
 }
 ```
 
-## React 类式组件 this 指向问题
+### React 类式组件 this 指向问题
 
 当在类式组件里面需要写一些方法完配合组件事件来更新state时，会出现this指向问题，因为只有当实例本身调用方法才能在方法里的this拿到实例本身，类式组件的方法默认开启了严格模式，所以需要在类的构造器里预修改具体方法的this指向，例如：
 
