@@ -393,3 +393,44 @@ key是虚拟dom对象的标识符，在显示更新的时候有着极其重要�
 
 来包被要严格检查的组件，可以实现异常检查警告
 
+## React ajax
+
+react原生不包含ajax请求组件库，需要自己编写或者引入，建议使用axios
+
+### cros跨域问题的解决
+
+- 开发环境
+
+  使用脚手架自带的代理配置，很简单，只需要在package.js文件中配置好proxy选项即可实现
+
+  或者配置多代理服务器
+
+  在src建立文件setupProxy.js
+
+  ```javascript
+  const proxy = require('http-proxy-middleware')
+  
+  module.exports = function(app){
+      app.use(
+      	proxy('/api1',
+          	{
+              	target: 'http://localhost:5000',//符合/api1路径的链接都会被转发到此
+              	changeOrigin: true,//控制服务器接收到请求头中的host值
+              	pathRewrite: {'^/api1':''}//重写请求路径
+          	}
+          ),
+          proxy('/api2',
+          	{
+              	target: 'http://localhost:5001',//符合/api1路径的链接都会被转发到此
+              	changeOrigin: true,//控制服务器接收到请求头中的host值
+              	pathRewrite: {'^/api2':''}//重写请求路径
+          	}
+          )
+      )
+  }
+  ```
+
+- 生产环境
+
+  生产部署时由于部署的已经是打包好的前端静态文件，客户端上没法要求用户都配置正向代理，这种情况下可以在服务器端nginx上配置反响代理，或者按照跨域规则设置http标头来实现
+
