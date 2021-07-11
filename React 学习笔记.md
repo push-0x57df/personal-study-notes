@@ -434,3 +434,21 @@ react原生不包含ajax请求组件库，需要自己编写或者引入，建�
 
   生产部署时由于部署的已经是打包好的前端静态文件，客户端上没法要求用户都配置正向代理，这种情况下可以在服务器端nginx上配置反响代理，或者按照跨域规则设置http标头来实现
 
+## React 路由
+
+引入路由
+
+``` javascript
+import { BrowerRouter,Route,Link } from "react-router-dom"
+```
+
+路由分为两种
+
+- BrowerRouter
+
+  实现的方式类似于在域名后添加路径
+
+- HashRouter
+
+  实现方式类似于锚点
+
