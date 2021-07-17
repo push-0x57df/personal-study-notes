@@ -12,7 +12,7 @@
 
 ## 数据库
 
-- 生成数据库迁移文件
+- 生成数据库模型的同时生成迁移文件
 
   ``` powershell
   php artisan make:model User -m
