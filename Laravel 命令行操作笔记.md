@@ -26,5 +26,30 @@
   php artisan migrate
   ```
 
-  
+
+## 清除缓存
+
+1. 清除应用程序缓存
+
+   ``` powershell
+   php artisan cache:clear
+   ```
+
+2. 清除路由缓存
+
+   ``` powershell
+   php artisan route:cache
+   ```
+
+3. 清除配置缓存
+
+   ``` powershell
+   php artisan config:cache
+   ```
+
+4. 清除视图文件缓存
+
+   ``` powershell
+   php artisan view:clear
+   ```
 
