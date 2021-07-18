@@ -10,6 +10,51 @@
 
   生成一个控制器，生成的控制器位于 app\Http\Controllers
 
+## 创建中间件
+
+- 生成中间件
+
+  ``` powershell
+  php artisan make:middleware LoginMiddleware
+  ```
+
+- 注册中间件
+
+  中间件在文件 app\Http\Kernel.php 里进行注册
+
+  - 全局中间件
+
+    注册在全局有效
+
+    ``` php
+    protected $middleware = [
+    		//全局有效的中间件
+    	];
+    ```
+
+  - 分配到路由的中间件
+
+    ``` php
+    protected $routeMiddleware = [
+            //路由中间件
+        ];
+    ```
+
+  - 成组分配的中间件组
+
+    为一组中间件分配一个 key 再通过 key 调用
+
+    ``` php
+    protected $middlewareGroups = [
+            'web' => [
+                //分配到web组
+            ],
+            'api' => [
+                //分配到api组
+            ],
+        ];
+    ```
+
 ## 数据库
 
 - 生成数据库模型的同时生成迁移文件
