@@ -1,0 +1,2 @@
+curl https://breed.hackpascal.net/breed-mt7628-hiwifi-hc5661a.bin -o recover.bin -k
+mtd write recover.bin u-boot
