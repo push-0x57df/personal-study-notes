@@ -202,4 +202,65 @@ export default function FirstPost() {
 
    ![Layout](Nextjs 学习.assets/layout.png)
 
-   
+### 全局样式
+
+添加全局样式的基本方法是在顶层组件中添加非模块化的 CSS
+
+在 pages 目录下创建文件 _app.js 并填入以下代码：
+
+``` jsx
+export default function App({ Component, pageProps }) {
+  return <Component {...pageProps} />
+}
+```
+
+这样的组件规则创建了一个顶层组件，再此我们可以附加 CSS 全局规则
+
+> 注意：修改顶层组件可能需要重启服务才能生效
+
+创建顶层目录 style 创建文件 /style/global.css 填入代码：
+
+``` css
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+    Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  line-height: 1.6;
+  font-size: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+```
+
+然后，将其引入到顶层组件 /page/_app.js 中
+
+``` jsx
+import '../styles/global.css'
+
+export default function App({ Component, pageProps }) {
+  return <Component {...pageProps} />
+}
+```
+
+
+
+
+
