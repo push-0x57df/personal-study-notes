@@ -436,3 +436,46 @@ var obj = new AgriLoan(10,1)
 console.log("利润为 : "+obj.interest+"，抽成为 : "+obj.rebate )
 ```
 
+## 对象
+
+对象是包含一组键值对的实例。 值可以是标量、函数、数组、对象等，如下实例：
+
+``` javascript
+var object_name = { 
+    key1: "value1", // 标量
+    key2: "value",  
+    key3: function() {
+        // 函数
+    }, 
+    key4:["content1", "content2"] //集合
+}
+```
+
+在 javascript 中，我们可以有如下操作：
+
+``` javascript
+var sites = { 
+   site1:"Runoob", 
+   site2:"Google" 
+};
+
+sites.sayHello = function(){ return "hello";}
+```
+
+这样在 javascript 中，这样的操作是正确可执行的
+
+如果在 typescript 中，会出现编译错误，在 typescript 中应该添加类型模板
+
+``` typescript
+var sites = {
+    site1: "Runoob",
+    site2: "Google",
+    sayHello: function () { } // 类型模板
+};
+sites.sayHello = function () {
+    console.log("hello " + sites.site1);
+};
+sites.sayHello();
+```
+
+在 typescript 中，对象可以作为参数传入函数中
