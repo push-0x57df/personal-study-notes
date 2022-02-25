@@ -338,3 +338,101 @@ var Iobj:Child = { v1:12, v2:23}
 console.log("value 1: "+Iobj.v1+" value 2: "+Iobj.v2)
 ```
 
+## 类
+
+### 特征
+
+typescript 的类定义和 javascript 类似
+
+### 继承
+
+typescript 的类支持单继承，不支持多继承，但支持多重继承
+
+语法格式：
+
+``` typescript
+class child_class_name extends parent_class_name
+```
+
+### 继承类的方法重写
+
+类继承后，子类可以对父类的方法重新定义，这个过程称之为方法的重写。
+
+其中 super 关键字是对父类的直接引用，该关键字可以引用父类的属性和方法。
+
+``` typescript
+class PrinterClass { 
+   doPrint():void {
+      console.log("父类的 doPrint() 方法。") 
+   } 
+} 
+ 
+class StringPrinter extends PrinterClass { 
+   doPrint():void { 
+      super.doPrint() // 调用父类的函数
+      console.log("子类的 doPrint()方法。")
+   } 
+}
+```
+
+### static 关键字
+
+static 能将类的成员方法和属性设置为静态类型
+
+``` typescript
+class StaticMem {  
+   static num:number; 
+   
+   static disp():void { 
+      console.log("num 值为 "+ StaticMem.num) 
+   } 
+} 
+ 
+StaticMem.num = 12     // 初始化静态变量
+StaticMem.disp()       // 调用静态方法
+```
+
+### 访问控制修饰符
+
+TypeScript 中，可以使用访问控制符来保护对类、变量、方法和构造方法的访问。TypeScript 支持 3 种不同的访问权限。
+
+- **public（默认）** : 公有，可以在任何地方被访问。
+- **protected** : 受保护，可以被其自身以及其子类访问。
+- **private** : 私有，只能被其定义所在的类访问。
+
+以下实例定义了两个变量 str1 和 str2，str1 为 public，str2 为 private，实例化后可以访问 str1，如果要访问 str2 则会编译错误。
+
+``` typescript
+class Encapsulate { 
+   str1:string = "hello" 
+   private str2:string = "world" 
+}
+ 
+var obj = new Encapsulate() 
+console.log(obj.str1)     // 可访问 
+console.log(obj.str2)   // 编译错误， str2 是私有的
+```
+
+### 类和接口
+
+类也可以实现接口，例如：
+
+``` typescript
+interface ILoan { 
+   interest:number 
+} 
+ 
+class AgriLoan implements ILoan { 
+   interest:number 
+   rebate:number 
+   
+   constructor(interest:number,rebate:number) { 
+      this.interest = interest 
+      this.rebate = rebate 
+   } 
+} 
+ 
+var obj = new AgriLoan(10,1) 
+console.log("利润为 : "+obj.interest+"，抽成为 : "+obj.rebate )
+```
+
