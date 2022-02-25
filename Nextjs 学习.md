@@ -103,6 +103,24 @@ id: 'two'
 
 ![image-20220223113100370](Nextjs 学习.assets/image-20220223113100370.png)
 
+### API 路由
+
+next 除了支持页面路由外还支持了 api 路由
+
+例如：创建文件 /page/api/hello.js 文件内容为：
+
+``` jsx
+export default function handler(req, res) {
+  res.status(200).json({ text: 'Hello' })
+}
+```
+
+访问 http://localhost:3000/api/hello 得到以下内容：
+
+``` json
+{"text":"Hello"}
+```
+
 ## 资源、元数据和css
 
 ### 资源
@@ -442,4 +460,3 @@ export async function getStaticProps({ params }) {
 ### 混合渲染
 
 另外 next.js 也能支持混合渲染模式，可根据实际需要组合使用，ISR 的实质就是 SSG + SSR
-
