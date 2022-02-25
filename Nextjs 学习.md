@@ -264,6 +264,8 @@ export default function App({ Component, pageProps }) {
 
 next 支持三种预渲染模式
 
+笔记来源：https://www.cnblogs.com/sexintercourse/p/15269766.html
+
 普通的单页应用只有一个 HTML，初次请求返回的 HTML 中没有任何页面内容，需要通过网络请求 JS bundle 并渲染，整个渲染过程都在客户端完成，所以叫客户端渲染（CSR）。这种渲染方式虽然在后续的页面切换速度很快，但是也明显存在两个问题：
 
 1. 白屏时间过长：在 JS bundle 返回之前，页面一直是空白的。假如 bundle 体积过大或者网络条件不好的情况下，体验会更不好
@@ -385,3 +387,54 @@ export async function getStaticProps({ params }) {
 ```
 
 SSG 虽然很好解决了白屏时间过长和 SEO 不友好的问题，但是它仅仅适合于页面内容较为静态的场景，比如官网、博客等。面对页面数据更新频繁或页面数量很多的情况，它似乎显得有点束手无策，毕竟在静态构建时不能拿到最新的数据和无法枚举海量页面。这时，就需要增量静态再生成(Incremental Static Regeneration)方案了。
+
+### ISR 增量静态页面生成
+
+![img](Nextjs 学习.assets/v2-0e2292f59df5d2f7343a257f3fc05bd1_720w.jpg)
+
+Next.js 推出的 ISR(Incremental Static Regeneration) 方案，允许在应用运行时再重新生成每个页面 HTML，而不需要重新构建整个应用。这样即使有海量页面，也能使用上 SSG 的特性。一般来说，使用 ISR 需要 `getStaticPaths` 和 `getStaticProps` 同时配合使用。举个例子：
+
+``` jsx
+// pages/posts/[id].js
+function Post(props) {
+    const { postData } = props;
+
+  return <div>{postData.title}</div>
+}
+
+export async function getStaticPaths() {
+  const paths = await fetch('https://.../posts');
+  return {
+    paths,
+    // 页面请求的降级策略，这里是指不降级，等待页面生成后再返回，类似于 SSR
+    fallback: 'blocking'
+  }
+}
+
+export async function getStaticProps({ params }) {
+  // 使用 params.id 获取对应的静态数据
+  const postData = await getPostData(params.id)
+  return {
+    props: {
+      postData
+    },
+    // 开启 ISR，最多每10s重新生成一次页面
+    revalidate: 10,
+  }
+}
+```
+
+在应用编译构建阶段，会生成已经确定的静态页面，和上面 SSG 执行流程一致。
+
+在 `getStaticProps` 函数返回的对象中增加 `revalidate` 属性，表示开启 ISR。在上面的例子中，指定 `revalidate = 10`，表示最多10秒内重新生成一次静态 HTML。当浏览器请求已在构建时渲染生成的页面时，首先返回的是缓存的 HTML，10s 后页面开始重新渲染，页面成功生成后，更新缓存，浏览器再次请求页面时就能拿到最新渲染的页面内容了。
+
+对于浏览器请求构建时未生成的页面时，会马上生成静态 HTML。在这个过程中，`getStaticPaths` 返回的 `fallback` 字段有以下的选项：
+
+- `fallback: 'blocking'`：不降级，并且要求用户请求一直等到新页面静态生成结束，静态页面生成结束后会缓存
+- `fallback: true`：降级，先返回降级页面，当静态页面生成结束后，会返回一个 JSON 供降级页面 CSR 使用，经过二次渲染后，完整页面出来了
+
+在上面的例子中，使用的是不降级方案(`fallback: 'blocking'`)，实际上和 SSR 方案有相似之处，都是阻塞渲染，只不过多了缓存而已。
+
+> If fallback is 'blocking', new paths not returned by getStaticPaths will wait for the HTML to be generated, identical to SSR (hence why blocking), and then be cached for future requests so it only happens once per path.
+
+也不是所有场景都适合使用 ISR。对于实时性要求较高的场景，比如新闻资讯类的网站，可能 SSR 才是最好的选择。
