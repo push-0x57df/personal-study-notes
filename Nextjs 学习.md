@@ -103,3 +103,103 @@ id: 'two'
 
 ![image-20220223113100370](Nextjs 学习.assets/image-20220223113100370.png)
 
+## 资源、元数据和css
+
+### 资源
+
+在 Next 中，类似图片资源等静态资源可以放置在 public 目录，这样操作上就可以按照文件系统的规则被链接
+
+例：
+
+``` 
+/public/img/abc.png => /img/abc.png
+```
+
+### 元数据
+
+如果要在组件中维护页面的 \<head> 头，可以使用 \<Head> 标记。
+
+例：
+
+``` js
+export default function FirstPost() {
+  return (
+    <>
+      <Head>
+        <title>First Post</title>
+      </Head>
+      …
+    </>
+  )
+}
+```
+
+在组件中这样使用 \<Head> 标签，title 元素将自动被覆写为新的 title 在页面上生效。
+
+### CSS
+
+可以使用 CSS 模块，可为某一个组件设置仅限于本组件作用域的 CSS ，能有效的解决classname 重名问题
+
+使用 styled-jsx 库可以为组件创建专属作用域的 CSS 并且其支持Sass 
+
+具体应用方法：
+
+1. 创建顶级目录 components
+
+2. 创建文件 layout.js 内容：
+
+   ``` jsx
+   export default function Layout({ children }) {
+     return <div>{children}</div>
+   }
+   ```
+
+3. 在父组件（pages/posts/first-post.js）中引入该组件
+
+   ``` jsx
+   import Head from 'next/head'
+   import Link from 'next/link'
+   import Layout from '../../components/layout'
+   
+   export default function FirstPost() {
+     return (
+       <Layout>
+         <Head>
+           <title>First Post</title>
+         </Head>
+         <h1>First Post</h1>
+         <h2>
+           <Link href="/">
+             <a>Back to home</a>
+           </Link>
+         </h2>
+       </Layout>
+     )
+   }
+   ```
+
+4. 给子组件 layout.js 添加样式，在 components 目录下新建 layout.module.css ，填入内容：
+
+   ``` css
+   .container {
+     max-width: 36rem;
+     padding: 0 1rem;
+     margin: 3rem auto 6rem;
+   }
+   ```
+
+5. import 引入样式到组件
+
+   ``` jsx
+   import styles from './layout.module.css'
+   
+   export default function Layout({ children }) {
+     return <div className={styles.container}>{children}</div>
+   }
+   ```
+
+   效果：
+
+   ![Layout](Nextjs 学习.assets/layout.png)
+
+   
