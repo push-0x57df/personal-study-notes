@@ -260,7 +260,46 @@ export default function App({ Component, pageProps }) {
 }
 ```
 
+## 预渲染模式
 
+next 支持三种预渲染模式
 
+普通的单页应用只有一个 HTML，初次请求返回的 HTML 中没有任何页面内容，需要通过网络请求 JS bundle 并渲染，整个渲染过程都在客户端完成，所以叫客户端渲染（CSR）。这种渲染方式虽然在后续的页面切换速度很快，但是也明显存在两个问题：
 
+1. 白屏时间过长：在 JS bundle 返回之前，页面一直是空白的。假如 bundle 体积过大或者网络条件不好的情况下，体验会更不好
+2. SEO 不友好：搜索引擎访问页面时，只会看 HTML 中的内容，默认是不会执行 JS，所以抓取不到页面的具体内容
+
+### SSR 服务端渲染
+
+服务端渲染指的是用户直接请求服务器端的页面代码数据，服务器直接下发 html 代码，这样做的好处是利于 SEO 优化，一次加载到位，优化白屏时间
+
+react 从框架的层面提供支持，只需要调用 renderToString(Component) 就可得到具体 html 内容
+
+Next.js 提供 `getServerSideProps` 异步函数，以在 SSR 场景下获取额外的数据并返回给组件进行渲染。`getServerSideProps` 可以拿到每次请求的上下文（`Context`)，举个例子：
+
+``` jsx
+export default function FirstPost(props) {
+  // 在 props 中拿到数据
+  const { title } = props;
+  return (
+    <Layout>
+      <h1>{title}</h1>
+    </Layout>
+  )
+}
+
+export async function getServerSideProps(context) {
+  console.log('context', context.req);
+  // 模拟获取数据
+  const title = await getTitle(context.req);
+  // 把数据放在 props 对象中返回出去
+  return {
+    props: {
+      title
+    }
+  }
+}
+```
+
+SSR 方案虽然解决了 CSR 带来的两个问题，但是同时又引入另一个问题：需要一个服务器承载页面的实时请求、渲染和响应，这无疑会增大服务端开发和运维的成本。另外对于一些较为静态场景，比如博客、官网等，它们的内容相对来说比较确定，变化不频繁，每次通过服务端渲染出来的内容都是一样的，无疑浪费了很多没必要的服务器资源。这时，有没有一种方案可以让这些页面变得静态呢？这时，静态站点生成（SSG，也叫构建时预渲染）诞生了。
 
