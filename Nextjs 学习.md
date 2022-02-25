@@ -438,3 +438,8 @@ export async function getStaticProps({ params }) {
 > If fallback is 'blocking', new paths not returned by getStaticPaths will wait for the HTML to be generated, identical to SSR (hence why blocking), and then be cached for future requests so it only happens once per path.
 
 也不是所有场景都适合使用 ISR。对于实时性要求较高的场景，比如新闻资讯类的网站，可能 SSR 才是最好的选择。
+
+### 混合渲染
+
+另外 next.js 也能支持混合渲染模式，可根据实际需要组合使用，ISR 的实质就是 SSG + SSR
+
