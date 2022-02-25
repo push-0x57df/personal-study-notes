@@ -303,3 +303,85 @@ export async function getServerSideProps(context) {
 
 SSR 方案虽然解决了 CSR 带来的两个问题，但是同时又引入另一个问题：需要一个服务器承载页面的实时请求、渲染和响应，这无疑会增大服务端开发和运维的成本。另外对于一些较为静态场景，比如博客、官网等，它们的内容相对来说比较确定，变化不频繁，每次通过服务端渲染出来的内容都是一样的，无疑浪费了很多没必要的服务器资源。这时，有没有一种方案可以让这些页面变得静态呢？这时，静态站点生成（SSG，也叫构建时预渲染）诞生了。
 
+### SSG 编译构建预渲染
+
+预编译构建时服务端将页面编译成静态的html页面，这样的页面加载时并不需要消耗服务器算力资源，不需要服务器再次渲染
+
+Next.js 默认为每个页面开启 SSG。对于页面内容需要依赖静态数据的场景，允许在每个页面中 `export` 一个 `getStaticProps` 异步函数，在这个函数中可以把该页面组件所需要的数据收集并返回。当 `getStaticProps` 函数执行完成后，页面组件就能在 `props` 中拿到这些数据并执行静态渲染。举个在静态路由中使用 SSG 的例子：
+
+``` jsx
+// pages/posts/first-post.js
+function Post(props) {
+  const { postData } = props;
+
+  return <div>{postData.title}</div>
+}
+
+export async function getStaticProps() {
+  // 模拟获取静态数据
+  const postData = await getPostData();
+  return {
+    props: { postData }
+  }
+}
+```
+
+对于动态路由的场景，Next.js 提供 `getStaticPaths` 异步函数，在这个方法中，会返回一个 `paths` 数组，这个数组包含了这个动态路由在构建时需要预渲染的页面数据。举个例子：
+
+``` jsx
+// pages/posts/[id].js
+function Post(props) {
+  const { postData } = props;
+
+  return <div>{postData.title}</div>
+}
+
+export async function getStaticPaths() {
+  // 返回该动态路由可能会渲染的页面数据，比如 params.id
+  const paths = [
+    {
+      params: { id: 'ssg-ssr' }
+    },
+    {
+      params: { id: 'pre-rendering' }
+    }
+  ]
+  return {
+    paths,
+    // 命中尚未生成静态页面的路由直接返回 404 页面
+    fallback: false
+  }
+}
+
+export async function getStaticProps({ params }) {
+  // 使用 params.id 获取对应的静态数据
+  const postData = await getPostData(params.id)
+  return {
+    props: {
+      postData
+    }
+  }
+}
+```
+
+当我们执行 `nextjs build` 后，可以看到打包结果包含 `pre-rendering.html` 和 `ssg-ssr.html` 两个 HTML 页面，也就是说在执行 SSG 时，会对 `getStaticPaths` 函数返回的 `paths` 数组进行循环，逐一预渲染页面组件并生成 HTML。
+
+```
+├── server
+|  ├── chunks
+|  ├── pages
+|  |  ├── api
+|  |  ├── index.html
+|  |  ├── index.js
+|  |  ├── index.json
+|  |  └── posts
+|  |     ├── [id].js
+|  |     ├── first-post.html
+|  |     ├── first-post.js
+|  |     ├── pre-rendering.html       # 预渲染生成 pre-rendering 页面
+|  |     ├── pre-rendering.json
+|  |     ├── ssg-ssr.html             # 预渲染生成 ssg-ssr 页面
+|  |     └── ssg-ssr.json
+```
+
+SSG 虽然很好解决了白屏时间过长和 SEO 不友好的问题，但是它仅仅适合于页面内容较为静态的场景，比如官网、博客等。面对页面数据更新频繁或页面数量很多的情况，它似乎显得有点束手无策，毕竟在静态构建时不能拿到最新的数据和无法枚举海量页面。这时，就需要增量静态再生成(Incremental Static Regeneration)方案了。
