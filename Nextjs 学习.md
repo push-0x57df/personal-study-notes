@@ -25,7 +25,7 @@ Next 静态路由把 /page 目录解析成根目录，将 URL 的域名后续部
 
 内容为：
 
-```js
+```jsx
 import Link from 'next/link'
 import Head from 'next/head'
 import Container from '../../components/container'
@@ -60,7 +60,7 @@ postData
 
 文件 post,js
 
-``` js
+``` jsx
 export function getPostData(id) {
 const postOne = {
 title: 'One',
@@ -121,7 +121,7 @@ id: 'two'
 
 例：
 
-``` js
+``` jsx
 export default function FirstPost() {
   return (
     <>
