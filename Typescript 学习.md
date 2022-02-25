@@ -61,7 +61,23 @@ typescript 是 javascript 的扩充，运行 typescript 需要先将其编译成
   var a:string = "hello";
   ```
 
-typescript 可以只定义变量不赋初始值。
+typescript 可以有联合类型
+
+联合类型（Union Types）可以通过管道(|)将变量设置多种类型，赋值时可以根据设置的类型来赋值。
+
+**注意**：只能赋值指定的类型，如果赋值其它类型就会报错。
+
+例如：
+
+``` typescript
+var val:string|number 
+val = 12 
+console.log("数字为 "+ val) 
+val = "Runoob" 
+console.log("字符串为 " + val)
+```
+
+typescript 可以只定义变量不赋初始值
 
 typescript 的变量是强类型约束的
 
