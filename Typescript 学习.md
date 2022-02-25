@@ -82,3 +82,140 @@ console.log(str2)
 
 它之所以不被称为**类型转换**，是因为转换通常意味着某种运行时的支持。但是，类型断言纯粹是一个编译时语法，同时，它也是一种为编译器提供关于如何分析代码的方法。
 
+## 函数
+
+### 返回值
+
+typescript可以规定函数的返回值
+
+例如：
+
+``` typescript
+function function_name():string { 
+    // 语句
+    return value; 
+}
+```
+
+它规定函数必须返回一个 string 类型的值，不返回或返回其他类型的值无法进行编译。
+
+### 参数
+
+typescript 函数携带参数时可以对参数的类型进行限定
+
+``` typescript
+function add(x: number, y: number): number {
+    return x + y;
+}
+console.log(add(1,2))
+```
+
+### 可选参数
+
+在 TypeScript 函数里，如果我们定义了参数，则我们必须传入这些参数，除非将这些参数设置为可选，可选参数使用问号标识 ？。
+
+``` typescript
+function buildName(firstName: string, lastName?: string) {
+    if (lastName)
+        return firstName + " " + lastName;
+    else
+        return firstName;
+}
+ 
+let result1 = buildName("Bob");  // 正确
+let result2 = buildName("Bob", "Adams", "Sr.");  // 错误，参数太多了
+let result3 = buildName("Bob", "Adams");  // 正确
+```
+
+### 默认参数
+
+我们也可以设置参数的默认值，这样在调用函数的时候，如果不传入该参数的值，则使用默认参数，语法格式为：
+
+```
+function function_name(param1[:type],param2[:type] = default_value) { 
+}
+```
+
+注意：参数不能同时设置为可选和默认。
+
+以下实例函数的参数 rate 设置了默认值为 0.50，调用该函数时如果未传入参数则使用该默认值：
+
+``` typescript
+function calculate_discount(price:number,rate:number = 0.50) { 
+    var discount = price * rate; 
+    console.log("计算结果: ",discount); 
+} 
+calculate_discount(1000) 
+calculate_discount(1000,0.30)
+```
+
+### 剩余参数
+
+有一种情况，我们不知道要向函数传入多少个参数，这时候我们就可以使用剩余参数来定义。
+
+剩余参数语法允许我们将一个不确定数量的参数作为一个数组传入。
+
+``` typescript
+function addNumbers(...nums:number[]) {  
+    var i;   
+    var sum:number = 0; 
+    
+    for(i = 0;i<nums.length;i++) { 
+       sum = sum + nums[i]; 
+    } 
+    console.log("和为：",sum) 
+ } 
+ addNumbers(1,2,3) 
+ addNumbers(10,10,10,10,10)
+```
+
+### 匿名函数
+
+匿名函数是没有函数名称的函数，除了没有函数名称以外与正常函数没有太大的差异
+
+例如：
+
+``` typescript
+var msg = function() { 
+    return "hello world";  
+} 
+console.log(msg())
+```
+
+### Lambda 函数
+
+也被称之为箭头函数
+
+例如：
+
+``` typescript
+var foo = (x:number)=>10 + x 
+console.log(foo(100))      //输出结果为 110
+```
+
+### 函数重载
+
+重载是方法名字相同，而参数不同，返回类型可以相同也可以不同。
+
+每个重载的方法（或者构造函数）都必须有一个独一无二的参数类型列表。
+
+- 参数类型不同：
+
+    ```typescript
+    function disp(string):void; 
+    function disp(number):void;
+    ```
+
+- 参数数量不同：
+
+    ```typescript
+    function disp(n1:number):void; 
+    function disp(x:number,y:number):void;
+    ```
+
+- 参数类型顺序不同：
+
+    ```typescript
+    function disp(n1:number,s1:string):void; 
+    function disp(s:string,n:number):void;
+    ```
