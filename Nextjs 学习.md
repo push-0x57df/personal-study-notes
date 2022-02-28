@@ -460,3 +460,101 @@ export async function getStaticProps({ params }) {
 ### 混合渲染
 
 另外 next.js 也能支持混合渲染模式，可根据实际需要组合使用，ISR 的实质就是 SSG + SSR
+
+## 类式组件和函数式组件
+
+### 函数式组件写法
+
+next 项目通常使用函数式组件，用 hooks 维持状态
+
+``` tsx
+import { NextPage } from "next";
+import { useState } from "react"
+
+const Test: NextPage = (props: any) => {
+    const [time, setTime] = useState(getTime());
+    function getTime(){
+        let time = new Date()
+        time = time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds() as unknown as Date
+        return time
+    }
+    const { title } = props
+    setInterval(() => {
+        setTime(getTime())
+        //console.log(time);
+    }, 10);
+    return (
+        <div>学习 {title} ,时间 {time}</div>
+    )
+}
+
+function getTitle() {
+    return 'next'
+}
+
+export async function getServerSideProps(context: any) {
+    // 模拟获取数据
+    const title = await getTitle();
+    // 把数据放在 props 对象中返回出去
+    return {
+        props: {
+            title
+        }
+    }
+}
+
+export default Test
+```
+
+### 类式组件
+
+``` tsx
+import React from 'react'
+import { NextPageContext } from 'next'
+
+interface Props {
+    title: string
+}
+
+interface state {
+    time: string
+}
+
+class Page extends React.Component<Props, state> {
+    constructor(props: Props) {
+        super(props)
+        this.state = {
+            time: this.getTime() as any as string
+        }
+    }
+
+    componentDidMount() {
+        setInterval(() => {
+            this.setState({
+                time: this.getTime() as any as string
+            })
+        }, 100);
+    }
+
+    getTime() {
+        let time = new Date()
+        time = time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds() as unknown as Date
+        return time
+    }
+
+    render() {
+        return <div>学习 {this.props.title} ,时间 {this.state.time}</div>
+    }
+}
+
+export default Page
+
+export async function getServerSideProps(context: any) {
+    return {
+        props: {
+            title: 'next'
+        }
+    }
+}
+```
+
