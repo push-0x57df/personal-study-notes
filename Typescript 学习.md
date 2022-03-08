@@ -273,6 +273,29 @@ console.log(employee.firstName)
 console.log(employee.lastName)
 ```
 
+### 接口和函数
+
+我们也可以使用接口来预定义函数结构
+
+``` typescript
+interface encypt{
+	(key:string, value:string):string;
+}
+
+var md5:encypt = function (key, value):string{
+	return key + ' ' + value // 模拟加密操作
+}
+console.log(md5('李', '二狗'))
+
+var sha1:encypt = function(key, value):string{
+	return key + '--' + value
+}
+console.log(sha1('dog', 'zi'))
+————————————————
+版权声明：本文为CSDN博主「bus_lupe」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/bus_lupe/article/details/91346827
+```
+
 ### 接口和数组
 
 我们可以按需设置数组索引和值的数据类型
