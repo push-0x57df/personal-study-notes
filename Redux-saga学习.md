@@ -359,12 +359,37 @@ export default class About extends PureComponent {
 
 ## Redux-saga 部分
 
-### Redux-saga 用来做什么
+### Redux-saga 概述
 
-`redux-saga` 是一个用于管理应用程序 Side Effect（副作用，例如异步获取数据，访问浏览器缓存等）的 library，它的目标是让副作用管理更容易，执行更高效，测试更简单，在处理故障时更容易。
+redux-saga是一个用于管理redux应用异步操作的中间件，redux-saga通过创建sagas将所有异步操作逻辑收集在一个地方集中处理，可以用来代替redux-thunk中间件。
 
-可以想像为，一个 saga 就像是应用程序中一个单独的线程，它独自负责处理副作用。 `redux-saga` 是一个 redux 中间件，意味着这个线程可以通过正常的 redux action 从主应用程序启动，暂停和取消，它能访问完整的 redux state，也可以 dispatch redux action。
+- 这意味着应用的逻辑会存在两个地方
+   (1) reducer负责处理action的stage更新
+   (2) sagas负责协调那些复杂或者异步的操作
+- sagas是通过generator函数来创建的
+- sagas可以被看作是在后台运行的进程。sagas监听发起的action，然后决定基于这个action来做什么 `(比如：是发起一个异步请求，还是发起其他的action到store，还是调用其他的sagas 等 )`
+- 在redux-saga的世界里，所有的任务都通过用 yield Effects 来完成 `( effect可以看作是redux-saga的任务单元 )`
+- Effects 都是简单的 javascript对象，包含了要被 saga middleware 执行的信息
+- redux-saga 为各项任务提供了各种 （ Effects创建器 )
+- 因为使用了generator函数，redux-saga让你可以用 同步的方式来写异步代码
+- redux-saga启动的任务可以在任何时候通过手动来取消，也可以把任务和其他的Effects放到 race 方法里以自动取消
 
-redux-saga 使用了 ES6 的 Generator 功能，让异步的流程更易于读取，写入和测试。*（如果你还不熟悉的话，[这里有一些介绍性的链接](https://redux-saga-in-chinese.js.org/docs/ExternalResources.html)）* 通过这样的方式，这些异步的流程看起来就像是标准同步的 Javascript 代码。（有点像 `async`/`await`，但 Generator 还有一些更棒而且我们也需要的功能）。
+------
 
-你可能已经用了 `redux-thunk` 来处理数据的读取。不同于 redux thunk，你不会再遇到回调地狱了，你可以很容易地测试异步流程并保持你的 action 是干净的。
+![img](https:////upload-images.jianshu.io/upload_images/6493119-f4c44eb340874014.png?imageMogr2/auto-orient/strip|imageView2/2/w/454/format/webp)
+
+React+Redux Cycle(来源：https://www.youtube.com/watch?v=1QI-UE3-0PU)
+
+- produce: 生产
+- flow: 流动，排出
+- 整个流程：ui组件触发action创建函数 ---> action创建函数返回一个action ------> action被传入redux中间件(被 saga等中间件处理) ，产生新的action，传入reducer-------> reducer把数据传给ui组件显示 -----> mapStateToProps ------> ui组件显示
+
+------
+
+
+
+作者：woow_wu7
+链接：https://www.jianshu.com/p/6f96bdaaea22
+来源：简书
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
