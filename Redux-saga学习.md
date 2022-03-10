@@ -394,3 +394,222 @@ React+Redux Cycle(来源：https://www.youtube.com/watch?v=1QI-UE3-0PU)
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 saga 其实就是一个中间件层，操作上当做中间处理流程就行。
+
+### 具体应用案例
+
+混合案例，内含 next、recat 组件式应用。
+
+#### saga 文件
+
+``` javascript
+import {delay, put, takeEvery} from 'redux-saga/effects'
+
+import {
+  GET_ASYNC_REDUX_SAGA_PROP_TYPE,
+  GET_ASYNC_REDUX_SAGA_PROP_TYPE_SUCCESS,
+  ASYNC_REDUX_SAGA_PROP_TEXT,
+} from '../constants'
+
+const TEST = process.env.NODE_ENV === 'test'
+
+function* getAsyncReduxSagaProp() {
+  yield delay(TEST ? 100 : 2000)
+
+  yield put({
+    type: GET_ASYNC_REDUX_SAGA_PROP_TYPE_SUCCESS,
+    data: ASYNC_REDUX_SAGA_PROP_TEXT,
+  })
+}
+
+function* getValue() {
+  yield delay(TEST ? 100 : 2000)
+  yield put({
+    type: 'getvalue'
+  })
+}
+
+function* rootSaga() {
+  yield takeEvery(GET_ASYNC_REDUX_SAGA_PROP_TYPE, getAsyncReduxSagaProp)
+  yield takeEvery('increase', getValue)
+}
+
+export default rootSaga
+```
+
+#### wapper 文件
+
+``` javascript
+import {applyMiddleware, createStore} from 'redux'
+import createSagaMiddleware from 'redux-saga'
+import {createWrapper} from 'next-redux-wrapper'
+
+import rootReducer from './root-reducer'
+import rootSaga from './root-saga'
+
+const makeStore = context => {
+  const sagaMiddleware = createSagaMiddleware()
+  const store = createStore(
+    rootReducer,
+    applyMiddleware(sagaMiddleware),
+  )
+
+  store.sagaTask = sagaMiddleware.run(rootSaga)
+
+  return store
+}
+
+const wrapper = createWrapper(makeStore)
+
+export default wrapper
+
+```
+
+#### reducer 文件
+
+``` javascript
+import {
+  GET_SYNC_REDUX_PROP_TYPE,
+  GET_ASYNC_REDUX_SAGA_PROP_TYPE_SUCCESS,
+} from '../constants'
+
+const initialState = {
+  count:0
+}
+
+function rootReducer(state = initialState, action) {
+  switch (action.type) {
+    case GET_SYNC_REDUX_PROP_TYPE:
+      return { ...state, syncReduxProp: action.data }
+    case GET_ASYNC_REDUX_SAGA_PROP_TYPE_SUCCESS:
+      return { ...state, asyncReduxSagaProp: 'action.data' }
+    case 'getvalue':
+      return { count: state.count + 1 }
+    default:
+      return state
+  }
+}
+
+export default rootReducer
+```
+
+#### _app.js 改造
+
+``` javascript
+import React from 'react'
+
+import App from 'next/app'
+
+import wrapper from '../test/store/store-wrapper'
+
+class ExampleApp extends App {
+  static async getInitialProps({Component, ctx}) {
+    let pageProps = {}
+
+    if (Component.getInitialProps) {
+      pageProps = await Component.getInitialProps({ctx})
+    }
+
+    return {pageProps}
+  }
+
+  render() {
+    const {Component, pageProps} = this.props
+
+    return (
+      <Component {...pageProps} />
+    )
+  }
+}
+
+export default wrapper.withRedux(ExampleApp)
+```
+
+#### 调用页面实例
+
+``` javascript
+import React, { Component } from 'react'
+
+import { string } from 'prop-types'
+
+import { connect } from 'react-redux'
+
+import withReduxSaga from '..'
+
+import Layout from '../components/layout'
+import store from '../test/store/store-wrapper'
+
+import {
+  GET_SYNC_REDUX_PROP_TYPE,
+  GET_ASYNC_REDUX_SAGA_PROP_TYPE,
+  STATIC_PROP_TEXT,
+  SYNC_REDUX_PROP_TEXT,
+} from '../test/constants'
+
+class AsyncExample extends Component {
+  static propTypes = {
+    staticProp: string,
+    syncReduxProp: string,
+    asyncReduxSagaProp: string,
+  }
+
+  static getInitialProps({ ctx: { store } }) {
+    store.dispatch({
+      type: GET_SYNC_REDUX_PROP_TYPE,
+      data: SYNC_REDUX_PROP_TEXT,
+    })
+
+    store.dispatch({ type: GET_ASYNC_REDUX_SAGA_PROP_TYPE })
+    return { staticProp: STATIC_PROP_TEXT}
+  }
+
+  render() {
+    const { staticProp, syncReduxProp, asyncReduxSagaProp, value, onIncreaseClick } = this.props
+    return (
+      <Layout>
+        <section>
+          Received <strong>static</strong> prop:
+          <pre>
+            <code>{staticProp}</code>
+          </pre>
+        </section>
+        <section>
+          Received <strong>synchronous</strong> Redux prop:
+          <pre>
+            <code>{syncReduxProp}</code>
+          </pre>
+        </section>
+        <section>
+          Received <strong>asynchronous</strong> Redux-Saga prop:
+          <pre>
+            <code>{asyncReduxSagaProp || 'loading...'}</code>
+          </pre>
+        </section>
+        <p>{value}</p>
+        <button onClick={onIncreaseClick}>测试</button>
+      </Layout>
+    )
+  }
+}
+
+
+function mapStateToProps(state) {
+  return {
+    value: state.count,
+    syncReduxProp: state.syncReduxProp
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    onIncreaseClick: () => dispatch(increaseAction)
+  }
+}
+
+
+// Action Creator
+const increaseAction = { type: 'increase' }
+
+export default withReduxSaga(connect(mapStateToProps, mapDispatchToProps)(AsyncExample))
+
+```
+
