@@ -613,3 +613,11 @@ export default withReduxSaga(connect(mapStateToProps, mapDispatchToProps)(AsyncE
 
 ```
 
+#### 获取一个开箱即用的 next-redux-saga 项目
+
+``` shell
+npx create-next-app --example with-redux-saga with-redux-saga-app
+# or
+yarn create next-app --example with-redux-saga with-redux-saga-app
+```
+
