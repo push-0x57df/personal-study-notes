@@ -393,3 +393,4 @@ React+Redux Cycle(来源：https://www.youtube.com/watch?v=1QI-UE3-0PU)
 来源：简书
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
+saga 其实就是一个中间件层，操作上当做中间处理流程就行。
