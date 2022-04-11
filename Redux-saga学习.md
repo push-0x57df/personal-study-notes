@@ -401,217 +401,242 @@ saga 其实就是一个中间件层，操作上当做中间处理流程就行。
 
 #### saga 文件
 
-``` javascript
-import {delay, put, takeEvery} from 'redux-saga/effects'
+``` ts
+import actionTypes from '~/data/redux/actionTypes';
+import { call, put, takeEvery } from 'redux-saga/effects';
+// eslint-disable-next-line import/no-cycle
+import userApi from '~/data/api/user';
+import actionCreate from './action';
 
-import {
-  GET_ASYNC_REDUX_SAGA_PROP_TYPE,
-  GET_ASYNC_REDUX_SAGA_PROP_TYPE_SUCCESS,
-  ASYNC_REDUX_SAGA_PROP_TEXT,
-} from '../constants'
+// 设置主题模式
+function* setThemeModel(action: { payload: string; }):any {
+  // eslint-disable-next-line no-shadow
+  const handle = function (themeModel:string) {
+    return userApi.setTheme({ themeModel }).then();
+  };
 
-const TEST = process.env.NODE_ENV === 'test'
-
-function* getAsyncReduxSagaProp() {
-  yield delay(TEST ? 100 : 2000)
-
-  yield put({
-    type: GET_ASYNC_REDUX_SAGA_PROP_TYPE_SUCCESS,
-    data: ASYNC_REDUX_SAGA_PROP_TEXT,
-  })
+  yield call(handle, action.payload);
 }
 
-function* getValue() {
-  yield delay(TEST ? 100 : 2000)
-  yield put({
-    type: 'getvalue'
-  })
+// 设置主题颜色
+function* setThemeColor(action: { payload: string; }):any {
+  // eslint-disable-next-line no-shadow
+  const handle = function (themeColor:string) {
+    return userApi.setTheme({ themeColor }).then();
+  };
+
+  yield call(handle, action.payload);
+}
+
+// 读取主题设置
+function* getTheme():any {
+  // eslint-disable-next-line no-shadow
+  const handle = function () {
+    return userApi.getTheme().then((data) => data);
+  };
+
+  const { data } = yield call(handle);
+
+  yield put(actionCreate.setThemeModel(data.data.themeModel));
+  yield put(actionCreate.setThemeColor(data.data.themeColor));
 }
 
 function* rootSaga() {
-  yield takeEvery(GET_ASYNC_REDUX_SAGA_PROP_TYPE, getAsyncReduxSagaProp)
-  yield takeEvery('increase', getValue)
+  yield takeEvery(actionTypes.SET_THEME_MODEL as any, setThemeModel);
+  yield takeEvery(actionTypes.SET_THEME_COLOR as any, setThemeColor);
+  yield takeEvery(actionTypes.GET_THEME as any, getTheme);
 }
 
-export default rootSaga
+export default rootSaga;
+
 ```
 
-#### wapper 文件
+#### store 文件
 
-``` javascript
-import {applyMiddleware, createStore} from 'redux'
-import createSagaMiddleware from 'redux-saga'
-import {createWrapper} from 'next-redux-wrapper'
+``` ts
+import createSagaMiddleware from 'redux-saga';
+import { applyMiddleware, createStore } from 'redux';
+import reducer from './reduces';
+// eslint-disable-next-line import/no-cycle
+import rootSaga from './saga';
 
-import rootReducer from './root-reducer'
-import rootSaga from './root-saga'
+const sagaMiddleware = createSagaMiddleware();
 
-const makeStore = context => {
-  const sagaMiddleware = createSagaMiddleware()
-  const store = createStore(
-    rootReducer,
-    applyMiddleware(sagaMiddleware),
-  )
+const store = createStore(
+  reducer,
+  applyMiddleware(sagaMiddleware),
+);
 
-  store.sagaTask = sagaMiddleware.run(rootSaga)
+sagaMiddleware.run(rootSaga);
 
-  return store
-}
+export default store;
 
-const wrapper = createWrapper(makeStore)
-
-export default wrapper
 
 ```
 
 #### reducer 文件
 
-``` javascript
-import {
-  GET_SYNC_REDUX_PROP_TYPE,
-  GET_ASYNC_REDUX_SAGA_PROP_TYPE_SUCCESS,
-} from '../constants'
+``` ts
+import actionTypes from '~/data/redux/actionTypes';
 
 const initialState = {
-  count:0
-}
+  themeModel: 'auto',
+  themeColor: 'dark_blue',
+  tipMessage: 'NULL',
+};
 
-function rootReducer(state = initialState, action) {
+// eslint-disable-next-line default-param-last
+const reducer = (state = initialState, action: { type: string, payload:any }) => {
   switch (action.type) {
-    case GET_SYNC_REDUX_PROP_TYPE:
-      return { ...state, syncReduxProp: action.data }
-    case GET_ASYNC_REDUX_SAGA_PROP_TYPE_SUCCESS:
-      return { ...state, asyncReduxSagaProp: 'action.data' }
-    case 'getvalue':
-      return { count: state.count + 1 }
+    case actionTypes.SET_THEME_MODEL:
+      return {
+        ...state,
+        themeModel: action.payload,
+      };
+    case actionTypes.SET_THEME_COLOR:
+      return {
+        ...state,
+        themeColor: action.payload,
+      };
+    case actionTypes.SEND_TIP:
+      return {
+        ...state,
+        tipMessage: action.payload,
+      };
     default:
-      return state
+      return state;
   }
-}
+};
 
-export default rootReducer
+export default reducer;
+
 ```
 
-#### _app.js 改造
+#### _app.tsx 改造
 
-``` javascript
-import React from 'react'
+``` tsx
+import React from 'react';
+import type { AppProps } from 'next/app';
+import '~/styles/global.css';
+import { Provider } from 'react-redux';
+import store from '~/data/redux/store';
+import AppReduxConnect from '~/pages/appReduxConnect';
 
-import App from 'next/app'
-
-import wrapper from '../test/store/store-wrapper'
-
-class ExampleApp extends App {
-  static async getInitialProps({Component, ctx}) {
-    let pageProps = {}
-
-    if (Component.getInitialProps) {
-      pageProps = await Component.getInitialProps({ctx})
-    }
-
-    return {pageProps}
-  }
-
-  render() {
-    const {Component, pageProps} = this.props
-
-    return (
-      <Component {...pageProps} />
-    )
-  }
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <Provider store={store}>
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+      <AppReduxConnect app={<Component {...pageProps} />} />
+    </Provider>
+  );
 }
 
-export default wrapper.withRedux(ExampleApp)
+export default MyApp;
+
 ```
 
-#### 调用页面实例
+#### action 文件
 
-``` javascript
-import React, { Component } from 'react'
+``` typescript
+import actionTypes from '~/data/redux/actionTypes';
 
-import { string } from 'prop-types'
+const action = {
 
-import { connect } from 'react-redux'
+  // 设置主题模式
+  setThemeModel: (themeModel:string) => ({
+    type: actionTypes.SET_THEME_MODEL,
+    payload: themeModel,
+  }),
 
-import withReduxSaga from '..'
+  // 设置主题颜色
+  setThemeColor: (themeColor:string) => ({
+    type: actionTypes.SET_THEME_COLOR,
+    payload: themeColor,
+  }),
 
-import Layout from '../components/layout'
-import store from '../test/store/store-wrapper'
+  // 读取服务器上的主题设置
+  getTheme: () => ({
+    type: actionTypes.GET_THEME,
+  }),
 
-import {
-  GET_SYNC_REDUX_PROP_TYPE,
-  GET_ASYNC_REDUX_SAGA_PROP_TYPE,
-  STATIC_PROP_TEXT,
-  SYNC_REDUX_PROP_TEXT,
-} from '../test/constants'
+  // 发送提示
+  sendTip: (tipMessage:any) => ({
+    type: actionTypes.SEND_TIP,
+    payload: tipMessage,
+  }),
+};
 
-class AsyncExample extends Component {
-  static propTypes = {
-    staticProp: string,
-    syncReduxProp: string,
-    asyncReduxSagaProp: string,
-  }
+export default action;
+```
 
-  static getInitialProps({ ctx: { store } }) {
-    store.dispatch({
-      type: GET_SYNC_REDUX_PROP_TYPE,
-      data: SYNC_REDUX_PROP_TEXT,
-    })
+#### actionType 文件
 
-    store.dispatch({ type: GET_ASYNC_REDUX_SAGA_PROP_TYPE })
-    return { staticProp: STATIC_PROP_TEXT}
-  }
+``` typescript
+const actionTypes = {
+  SET_THEME_MODEL: 'SET_THEME_MODEL',
+  SET_THEME_COLOR: 'SET_THEME_COLOR',
+  GET_THEME: 'GET_THEME',
+  SEND_TIP: 'SEND_TIP',
+};
 
-  render() {
-    const { staticProp, syncReduxProp, asyncReduxSagaProp, value, onIncreaseClick } = this.props
-    return (
-      <Layout>
-        <section>
-          Received <strong>static</strong> prop:
-          <pre>
-            <code>{staticProp}</code>
-          </pre>
-        </section>
-        <section>
-          Received <strong>synchronous</strong> Redux prop:
-          <pre>
-            <code>{syncReduxProp}</code>
-          </pre>
-        </section>
-        <section>
-          Received <strong>asynchronous</strong> Redux-Saga prop:
-          <pre>
-            <code>{asyncReduxSagaProp || 'loading...'}</code>
-          </pre>
-        </section>
-        <p>{value}</p>
-        <button onClick={onIncreaseClick}>测试</button>
-      </Layout>
-    )
-  }
-}
-
-
-function mapStateToProps(state) {
-  return {
-    value: state.count,
-    syncReduxProp: state.syncReduxProp
-  }
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    onIncreaseClick: () => dispatch(increaseAction)
-  }
-}
-
-
-// Action Creator
-const increaseAction = { type: 'increase' }
-
-export default withReduxSaga(connect(mapStateToProps, mapDispatchToProps)(AsyncExample))
+export default actionTypes;
 
 ```
+
+#### 组件调用实例
+
+组件结尾导出处连接 redux
+
+``` tsx
+const mapStateToProps = (state:{themeModel:string, themeColor:string}) => ({
+  themeModel: state.themeModel,
+  themeColor: state.themeColor,
+});
+
+export default connect(mapStateToProps)(Header);
+
+```
+
+组件定义处处理 props 连接
+
+``` tsx
+type propsType = {
+  themeModel:string;
+  dispatch:any,
+  themeColor:string,
+}
+
+function Header({ dispatch, themeModel, themeColor }:propsType) {});
+```
+
+组件内使用 props 可以直接访问 redux 中的 state
+
+组件内使用 props 传入的 dispatch 方法更新 redux state 进而通过 props 传入来影响页面内容
+
+``` tsx
+  // 登出系统
+  const logoutHandle = () => {
+    api.logout().then(({ data }) => {
+      dispatch(action.sendTip(data));
+      if (data.status === 'SUCCESS') {
+        User.refresh();
+        setTimeout(() => {
+          router.push('/');
+        }, 2000);
+      }
+    });
+  };
+```
+
+#### 非组件调用实例
+
+``` tsx
+import store from '~/data/redux/store';
+
+store.dispatch(action.sendTip(data.data));
+```
+
+直接使用 store 来访问
 
 #### 获取一个开箱即用的 next-redux-saga 项目
 

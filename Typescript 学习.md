@@ -712,3 +712,23 @@ var obj = new Runoob.Calc();
 console.log(obj.doSum(10));
 ```
 
+## 路径
+
+在 es6 的 import ... from ... 机制中，模块路径一般写成相对位置，这样的写法在复制代码和移动文件的时候容易导致出错，这时可以使用一个配置文件，将符号 ~ 配置成 src 目录，这样后续在书写路径的时候都可以以 src 目录为基点。
+
+``` typescript
+{
+    "compilerOptions": {
+		···
+        "baseUrl": "./",
+        "paths": {
+            "~/*": [
+                "src/*"
+            ]
+        }
+    },
+    ···
+}
+```
+
+> 注意！修改配置文件后应当重启项目！
