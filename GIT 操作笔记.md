@@ -296,3 +296,35 @@ git remote add  <远程仓库ssh地址>
 #第一次推送代码到远程仓库，后续推送只要使用git push
 git push --set-upstream origin master
 ```
+
+## Conventional Commits 约定式提交规范
+
+Conventional Commits 是一种用于给提交信息增加人机可读含义的规范。约定式提交规范是一种基于消息的轻量级约定。它提供了一组用于创建清晰的提交历史的简单规则；这使得编写基于规范的自动化工具变得更容易。这个约定与 SemVer 相吻合，在提交信息中描述新特性、bug 修复和破坏性变更。
+
+提交说明的结构如下所示：
+
+``` 
+<类型>([可选的作用域]): <描述>
+
+[可选的正文]
+
+[可选的脚注]
+复制代码
+类型（type）
+```
+
+- feat：类型为 feat 的提交表示在代码库中新增了一个功能（这和语义化版本中的 MINOR 相对应）
+- fix：类型为 fix 的 提交表示在代码库中修复了一个 bug （这和语义化版本中的 PATCH 相对应）
+- docs：只是更改文档
+- style：不影响代码含义的变化（空白、格式化、缺少分号等）
+- refactor：代码重构，既不修复错误也不添加功能
+- perf：改进性能的代码更改
+- test：添加确实测试或更正现有的测试
+- build：影响构建系统或外部依赖关系的更改（示例范围：gulp、broccoli、NPM）
+- ci：更改持续集成文件和脚本（示例范围：Travis、Circle、BrowserStack、SauceLabs）
+- chore：其他不修改src或test文件
+- revert：commit 回退
+
+> 前端使用的自动化 Conventional Commits 工具：
+>
+> https://juejin.cn/post/6877462747631026190
