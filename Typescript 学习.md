@@ -503,6 +503,46 @@ sites.sayHello();
 
 在 typescript 中，对象可以作为参数传入函数中
 
+## 泛型
+
+### 泛型定义接口
+
+``` typescript
+interface argToResult {
+    <T>(arg:T):T;
+}
+```
+
+### 泛型类
+
+``` typescript
+class Number<T> {
+    zeroValue: T;
+    add: (x:T, y:T) => T;
+}
+```
+
+### 泛型继承接口
+
+``` typescript
+function returnLength<T>(arg:T):T{
+    console.log(arg.length)
+    return arg
+}
+//但是这样并不能保证所有的参数都有length这个方法，于是需要对泛型进行限制，增加接口
+
+interface lengthRequire{
+    length:number//表示其length属性必须为数值型
+}
+
+function newReturnLength<T extend lengthRequire>(arg:T):T{
+    console.log(arg.length)
+    return arg
+}
+//这样在函数调用的时候就绝对不会报错
+//但是没有length属性的参数将会在函数之前直接编译无法通过
+```
+
 ## 命名空间
 
 ### 概念
