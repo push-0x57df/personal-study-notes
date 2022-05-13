@@ -281,6 +281,63 @@ git config  --global --unset user.name
 git config --global user.name jianan
 ```
 
+## 标签管理
+
+### 创建 标签
+
+``` shell
+# 依据最后一个 commit 创建 tag
+git tag <tagName>
+# 依据指定 commit id 创建 tag
+git tag <tagName> <commitId>
+```
+
+### 推送到远程
+
+``` shell
+# 推送指定 tag
+git push origin <tagName>
+# 推送全部本地 tag
+git push origin --tags
+```
+
+### 查看标签
+
+``` shell
+# 查看本地某个 tag
+git show <tagName>
+# 查看本地所有 tag
+git tag 或 git tag -l
+# 查看远程所有 tag
+git ls-remote --tags origin
+```
+
+### 删除标签
+
+``` shell
+# 删除本地 tag
+git tag -d <tagName>
+# 删除远程 tag
+git push origin :refs/tags/<tagName>
+```
+
+### 检出标签
+
+``` shell
+git checkout -b <branchName> <tagName>
+```
+
+### 其他
+
+``` shell
+# 指定标签信息
+git tag -a <tagName> -m "<info>"
+# 创建附注标签
+git tag -a v0.1.0 -m "release 0.1.0 version"
+# 切换标签
+git checkout <tagname>
+```
+
 ## 案例一：第一次提交项目源码
 
 ``` powershell

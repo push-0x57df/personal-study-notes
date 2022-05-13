@@ -83,13 +83,13 @@
 2. 清除路由缓存
 
    ``` powershell
-   php artisan route:cache
+   php artisan route:clear
    ```
 
 3. 清除配置缓存
 
    ``` powershell
-   php artisan config:cache
+   php artisan config:clear
    ```
 
 4. 清除视图文件缓存
